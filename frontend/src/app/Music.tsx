@@ -8,7 +8,7 @@ export default function Music() {
   const [widgetText, setWidgetText] = useState("my widget text");
 
   useEffect(() => {
-    axios.get("/api/test")
+    axios.get("/file/tedeum/rehearsal-d.abc")
       .then(
         (result) => {
           setIsLoaded(true);
