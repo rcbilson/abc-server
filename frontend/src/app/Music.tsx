@@ -1,36 +1,23 @@
 'use client';
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import useServerSentEvents from './useServerSentEvents'
+import Abcjs from "./Abcjs";
 
 export default function Music() {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [error, setError] = useState("");
-  const [widgetText, setWidgetText] = useState("my widget text");
-
-  useEffect(() => {
-    axios.get("/file/tedeum/rehearsal-d.abc")
-      .then(
-        (result) => {
-          setIsLoaded(true);
-          setWidgetText(result.data);
-        },
-        // Note: it's important to handle errors here
-        // instead of a catch() block so that we don't swallow
-        // exceptions from actual bugs in components.
-        (error) => {
-          setIsLoaded(true);
-          setError(error);
-        }
-      )
-  }, [])
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  } else if (!isLoaded) {
-    return <div>Loading...</div>;
-  } else {
-    return (
-      <p>{widgetText}</p>
+  let body = (<p>"nothing yet..."</p>);
+  const data = useServerSentEvents('http://192.168.10.3:9000/file/tedeum/rehearsal-d.abc');
+  if (data) {
+    body = (
+      <Abcjs
+        abcNotation={data}
+        parserParams={{}}
+        engraverParams={{ responsive: 'resize' }}
+        renderParams={{ viewportHorizontal: true }}
+      />
     )
   }
+
+  return (
+    <div>{body}</div>
+  )
 }
