@@ -34,23 +34,20 @@ func longPollHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		// Read the file contents
 		fileContents, err := readFile(name)
-		if err != nil {
-			log.Println("Error reading file:", err)
-			continue
-		}
-
-		// Send the file contents to the client
-		fmt.Fprintf(w, "data: ")
-		for _, c := range fileContents {
-			fmt.Fprintf(w, "%c", c)
-			if c == '\n' {
-				fmt.Fprintf(w, "data: ")
+		if err == nil {
+			// Send the file contents to the client
+			fmt.Fprintf(w, "data: ")
+			for _, c := range fileContents {
+				fmt.Fprintf(w, "%c", c)
+				if c == '\n' {
+					fmt.Fprintf(w, "data: ")
+				}
 			}
-		}
-		fmt.Fprintf(w, "\n\n")
-		flusher, ok := w.(http.Flusher)
-		if ok {
-			flusher.Flush()
+			fmt.Fprintf(w, "\n\n")
+			flusher, ok := w.(http.Flusher)
+			if ok {
+				flusher.Flush()
+			}
 		}
 
 		<-fileChanges
@@ -65,7 +62,7 @@ func monitorFileChanges(fileChanges chan<- bool, pathName string) {
 	}
 	defer watcher.Close()
 
-        dir := filepath.Dir(pathName)
+	dir := filepath.Dir(pathName)
 	err = watcher.Add(dir)
 	if err != nil {
 		log.Fatal("Error adding file to watcher:", dir, err)

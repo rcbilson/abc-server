@@ -3,9 +3,9 @@ import { useState, useEffect } from 'react'
 import useServerSentEvents from './useServerSentEvents'
 import Abcjs from "./Abcjs";
 
-export default function Music() {
+export default function Music(params: { path: string }) {
   let body = (<p>"nothing yet..."</p>);
-  const data = useServerSentEvents('http://192.168.10.3:9000/file/tedeum/rehearsal-d.abc');
+  const data = useServerSentEvents('http://192.168.10.3:9000/' + params.path);
   if (data) {
     body = (
       <Abcjs

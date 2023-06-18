@@ -7,7 +7,6 @@ class Abcjs extends PureComponent {
   uniqueNumber = Date.now() + Math.random()
 
   renderAbcNotation(abcNotation, parserParams, engraverParams, renderParams) {
-    console.log(abcNotation)
     const res = abcjsObj.renderAbc(
       'abcjs-result-' + this.uniqueNumber,
       abcNotation,
