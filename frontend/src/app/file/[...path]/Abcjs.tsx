@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import abcjsObj from 'abcjs'
 
@@ -23,11 +23,11 @@ const Abcjs: React.FC<AbcProps> = (props: AbcProps) => {
   };
   const {abcNotation, parserParams, engraverParams, renderParams} = propsWithDefaults;
 
-  const [uniqueNumber, _] = useState(Date.now() + Math.random());
+  const uniqueNumber = useRef(Date.now() + Math.random());
 
   useEffect(() => {
     abcjsObj.renderAbc(
-      'abcjs-result-' + uniqueNumber,
+      'abcjs-result-' + uniqueNumber.current,
       abcNotation,
       parserParams,
       engraverParams,
@@ -37,7 +37,7 @@ const Abcjs: React.FC<AbcProps> = (props: AbcProps) => {
 
   return (
     <div style={{ width: '100%' }}>
-      <div id={'abcjs-result-' + uniqueNumber} style={{ width: '100%' }} />
+      <div id={'abcjs-result-' + uniqueNumber.current} style={{ width: '100%' }} />
     </div>
   )
 }
