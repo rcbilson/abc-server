@@ -28,6 +28,18 @@ const Abcjs: React.FC<AbcProps> = (props: AbcProps) => {
   const synthControl = useRef();
 
   useEffect(() => {
+    const selector = "[id='abcjs-control-" + uniqueNumber.current + "']";
+    synthControl.current = new ABCJS.synth.SynthController();
+    synthControl.current.load(selector, null, {
+      displayLoop: true,
+      displayWarp: true,
+      displayPlay: true,
+      displayProgress: true,
+      displayRestart: true
+    });
+  }, []);
+
+  useEffect(() => {
     const visualObj = ABCJS.renderAbc(
       'abcjs-result-' + uniqueNumber.current,
       abcNotation,
@@ -35,18 +47,7 @@ const Abcjs: React.FC<AbcProps> = (props: AbcProps) => {
       engraverParams,
       renderParams
     )[0];
-    if (!synthControl.current) {
-      const selector = "[id='abcjs-control-" + uniqueNumber.current + "']";
-      synthControl.current = new ABCJS.synth.SynthController();
-      synthControl.current.load(selector, null, {
-        displayLoop: true,
-        displayWarp: true,
-        displayPlay: true,
-        displayProgress: true,
-        displayRestart: true
-      });
-    }
-    synthControl.current.setTune(visualObj, false, {visualObj: visualObj});
+    synthControl.current.setTune(visualObj, false);
   }, [abcNotation, parserParams, engraverParams, renderParams]);
 
   return (
