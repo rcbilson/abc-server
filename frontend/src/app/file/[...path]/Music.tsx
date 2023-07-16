@@ -5,8 +5,7 @@ import Abcjs from "./Abcjs";
 
 export default function Music(params: { path: string }) {
   let body = (<p>"nothing yet..."</p>);
-  //const data = useServerSentEvents('http://192.168.10.3:9000/' + params.path);
-  const data = useServerSentEvents('http://100.89.200.9:9000/' + params.path);
+  const data = useServerSentEvents(process.env.NEXT_PUBLIC_SERVER_URL + params.path);
   if (data) {
     body = (
       <Abcjs
