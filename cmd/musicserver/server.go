@@ -8,15 +8,30 @@ import (
 	"path/filepath"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/kelseyhightower/envconfig"
 )
 
+type specification struct {
+	Port     int
+	FilePath string
+	//FrontendPath string
+}
+
+var spec specification
+
 func main() {
+	err := envconfig.Process("musicserver", &spec)
+	if err != nil {
+		log.Fatal("error reading environment variables:", err)
+	}
+
 	http.Handle("/file/", http.StripPrefix("/file/", http.HandlerFunc(longPollHandler)))
-	log.Fatal(http.ListenAndServe(":9000", nil))
+	log.Println("server listening on port", spec.Port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", spec.Port), nil))
 }
 
 func longPollHandler(w http.ResponseWriter, r *http.Request) {
-	name := "/home/richard/choir/" + r.URL.Path
+	name := spec.FilePath + r.URL.Path
 
 	// Set the response type to text/event-stream for server-sent events (SSE)
 	w.Header().Set("Content-Type", "text/event-stream")

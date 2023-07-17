@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+export MUSICSERVER_PORT=9000
+export MUSICSERVER_FILEPATH=/home/richard/choir/
+go run cmd/musicserver/server.go &
+trap "kill $!" EXIT
+cd frontend && exec yarn run dev
