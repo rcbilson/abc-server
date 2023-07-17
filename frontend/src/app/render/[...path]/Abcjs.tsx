@@ -6,15 +6,14 @@ import 'abcjs/abcjs-audio.css'
 
 interface AbcProps {
   abcNotation: string,
-  parserParams?: any,
-  engraverParams?: any,
-  renderParams?: any
+  parserParams?: ABCJS.AbcVisualParams 
 }
 
 const defaultProps = {
-  parserParams: {},
-  engraverParams: { responsive: 'resize' },
-  renderParams: { viewportHorizontal: true }
+  parserParams: {
+    responsive: 'resize',
+    viewportHorizontal: true
+  }
 } satisfies Partial<AbcProps>
 
 const Abcjs: React.FC<AbcProps> = (props: AbcProps) => {
@@ -22,10 +21,10 @@ const Abcjs: React.FC<AbcProps> = (props: AbcProps) => {
     ...defaultProps,
     ...props
   };
-  const {abcNotation, parserParams, engraverParams, renderParams} = propsWithDefaults;
+  const {abcNotation, parserParams} = propsWithDefaults;
 
   const uniqueNumber = useRef(Date.now() + Math.random());
-  const synthControl = useRef();
+  const synthControl = useRef<ABCJS.SynthObjectController>();
 
   useEffect(() => {
     const selector = "[id='abcjs-control-" + uniqueNumber.current + "']";
@@ -43,12 +42,12 @@ const Abcjs: React.FC<AbcProps> = (props: AbcProps) => {
     const visualObj = ABCJS.renderAbc(
       'abcjs-result-' + uniqueNumber.current,
       abcNotation,
-      parserParams,
-      engraverParams,
-      renderParams
+      parserParams
     )[0];
-    synthControl.current.setTune(visualObj, false);
-  }, [abcNotation, parserParams, engraverParams, renderParams]);
+    if (synthControl.current) {
+      synthControl.current.setTune(visualObj, false);
+    }
+  }, [abcNotation, parserParams]);
 
   return (
     <div style={{ width: '100%' }}>

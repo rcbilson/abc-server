@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import Music from './Music'
 
 export default function Home() {
   return (

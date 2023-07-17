@@ -4,7 +4,7 @@ import useServerSentEvents from './useServerSentEvents'
 import Abcjs from "./Abcjs";
 
 export default function Music(params: { path: string }) {
-  let body = (<p>"nothing yet..."</p>);
+  let body = (<p>nothing yet...</p>);
   const segments = params.path.split("/");
   segments[0] = "subscribe"
   const newpath = segments.join("/");
@@ -13,9 +13,6 @@ export default function Music(params: { path: string }) {
     body = (
       <Abcjs
         abcNotation={data}
-        parserParams={{}}
-        engraverParams={{ responsive: 'resize' }}
-        renderParams={{ viewportHorizontal: true }}
       />
     )
   }

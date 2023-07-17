@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const useServerSentEvents = (url) => {
+const useServerSentEvents = (url: string) => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
