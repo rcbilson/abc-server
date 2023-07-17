@@ -25,7 +25,7 @@ func main() {
 		log.Fatal("error reading environment variables:", err)
 	}
 
-	http.Handle("/file/", http.StripPrefix("/file/", http.HandlerFunc(longPollHandler)))
+	http.Handle("/subscribe/", http.StripPrefix("/subscribe/", http.HandlerFunc(longPollHandler)))
 	log.Println("server listening on port", spec.Port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", spec.Port), nil))
 }
