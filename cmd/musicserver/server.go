@@ -12,9 +12,9 @@ import (
 )
 
 type specification struct {
-	Port     int
-	FilePath string
-	//FrontendPath string
+	Port         int
+	FilePath     string
+	FrontendPath string
 }
 
 var spec specification
@@ -26,6 +26,7 @@ func main() {
 	}
 
 	http.Handle("/subscribe/", http.StripPrefix("/subscribe/", http.HandlerFunc(longPollHandler)))
+	http.Handle("/", http.FileServer(http.dir(spec.FrontendPath)))
 	log.Println("server listening on port", spec.Port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", spec.Port), nil))
 }
