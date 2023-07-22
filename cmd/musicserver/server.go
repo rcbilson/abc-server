@@ -26,7 +26,7 @@ func main() {
 	}
 
 	http.Handle("/subscribe/", http.StripPrefix("/subscribe/", http.HandlerFunc(longPollHandler)))
-	http.Handle("/", http.FileServer(http.dir(spec.FrontendPath)))
+	http.Handle("/", http.FileServer(http.Dir(spec.FrontendPath)))
 	log.Println("server listening on port", spec.Port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", spec.Port), nil))
 }
@@ -36,7 +36,8 @@ func longPollHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Set the response type to text/event-stream for server-sent events (SSE)
 	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Cache-Control", "no-cache")
+        // https://github.com/facebook/create-react-app/issues/1633
+	w.Header().Set("Cache-Control", "no-transform")
 	w.Header().Set("Connection", "keep-alive")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 

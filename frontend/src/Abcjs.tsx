@@ -1,6 +1,5 @@
 "use client";
-import React, { useRef, useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
+import React, { useRef, useEffect } from 'react'
 import ABCJS from 'abcjs'
 import 'abcjs/abcjs-audio.css'
 
