@@ -25,13 +25,14 @@ func main() {
 		log.Fatal("error reading environment variables:", err)
 	}
 
-        // Handle the /subscribe route in the backend
+	// Handle the /subscribe route in the backend
 	http.Handle("/subscribe/", http.StripPrefix("/subscribe/", http.HandlerFunc(longPollHandler)))
 
-        // For all other requests, serve up the frontend code
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// For render requests, serve up the frontend code
+	http.HandleFunc("/render/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, fmt.Sprintf("%s/index.html", spec.FrontendPath))
 	})
+	http.Handle("/", http.FileServer(http.Dir(spec.FrontendPath)))
 	log.Println("server listening on port", spec.Port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", spec.Port), nil))
 }
@@ -50,7 +51,11 @@ func longPollHandler(w http.ResponseWriter, r *http.Request) {
 	fileChanges := make(chan bool)
 
 	// Start a goroutine to monitor file changes
-	go monitorFileChanges(fileChanges, name)
+	err := monitorFileChanges(fileChanges, name)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
 
 	// Loop until file changes occur
 	for {
@@ -72,41 +77,50 @@ func longPollHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		<-fileChanges
+		_, more := <-fileChanges
+		if !more {
+			return
+		}
 	}
 }
 
-func monitorFileChanges(fileChanges chan<- bool, pathName string) {
+func monitorFileChanges(fileChanges chan<- bool, pathName string) error {
 	// Create a new file watcher
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
-		log.Fatal("Error creating file watcher:", err)
+		return err
 	}
-	defer watcher.Close()
 
 	dir := filepath.Dir(pathName)
 	err = watcher.Add(dir)
 	if err != nil {
-		log.Fatal("Error adding file to watcher:", dir, err)
+		watcher.Close()
+		return err
 	}
 
-	for {
-		select {
-		case event, ok := <-watcher.Events:
-			if !ok {
-				return
+	go func() {
+		defer watcher.Close()
+		defer close(fileChanges)
+		for {
+			select {
+			case event, ok := <-watcher.Events:
+				if !ok {
+					return
+				}
+				if event.Name == pathName && event.Has(fsnotify.Write) {
+					// File has been modified
+					fileChanges <- true
+				}
+			case err, ok := <-watcher.Errors:
+				if !ok {
+					return
+				}
+				log.Println("File watcher error:", err)
 			}
-			if event.Name == pathName && event.Has(fsnotify.Write) {
-				// File has been modified
-				fileChanges <- true
-			}
-		case err, ok := <-watcher.Errors:
-			if !ok {
-				return
-			}
-			log.Println("File watcher error:", err)
 		}
-	}
+	}()
+
+	return nil
 }
 
 func readFile(pathName string) (string, error) {
