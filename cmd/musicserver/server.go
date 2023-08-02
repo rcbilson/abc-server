@@ -53,6 +53,7 @@ func longPollHandler(w http.ResponseWriter, r *http.Request) {
 	// Start a goroutine to monitor file changes
 	err := monitorFileChanges(fileChanges, name)
 	if err != nil {
+                log.Println(name, "404", err)
 		http.NotFound(w, r)
 		return
 	}
