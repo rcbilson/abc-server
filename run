@@ -3,8 +3,8 @@
 set -e
 
 export MUSICSERVER_PORT=9000
-export MUSICSERVER_FILEPATH=/home/richard/choir/
+export MUSICSERVER_FILEPATH=/home/richard/choir
 export MUSICSERVER_FRONTENDPATH=${PWD}/frontend/build
 exec go run cmd/musicserver/server.go
-#trap "kill $!" EXIT
-#cd frontend && exec yarn run dev
+trap "kill $!" EXIT
+cd frontend && exec yarn run dev
