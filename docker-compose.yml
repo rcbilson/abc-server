@@ -1,0 +1,12 @@
+# vim: set aw sw=2
+version: '3.5'
+
+services:
+  musicserver:
+    build: .
+    container_name: music_server
+    ports:
+      - 9200:9092
+    volumes:
+      - /n/user/richard/choir:/app/data
+    restart: unless-stopped

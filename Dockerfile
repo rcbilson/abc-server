@@ -6,8 +6,12 @@ COPY backend .
 RUN go build -o /bin/musicserver ./cmd/musicserver
 
 FROM node:19-bullseye as build-frontend
+WORKDIR /src/abcjs
+COPY abcjs .
+RUN yarn link
 WORKDIR /src
 COPY frontend/package.json frontend/yarn.lock .
+RUN yarn link abcjs
 RUN yarn install
 COPY frontend .
 RUN yarnpkg run build
