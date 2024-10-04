@@ -1,8 +1,11 @@
+.PHONY: docker
 docker:
 	sudo DOCKER_BUILDKIT=1 docker build -t music_server .
 
+.PHONY: frontend
 frontend:
-	cd src/frontend && yarnpkg run build && cd -
+	cd frontend && yarnpkg run build && cd -
 
+.PHONY: backend
 backend:
-	cd src/backend && GOBIN=${PWD}/bin go install knilson.org/musicserver/cmd/musicserver && cd -
+	cd backend && GOBIN=${PWD}/bin go install knilson.org/musicserver/cmd/musicserver && cd -
