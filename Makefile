@@ -1,6 +1,13 @@
+SHELL=/bin/bash
+SERVICE=music
+
+.PHONY: up
+up: docker
+	/n/config/compose up -d ${SERVICE}
+
 .PHONY: docker
 docker:
-	sudo DOCKER_BUILDKIT=1 docker build -t music_server .
+	docker build . -t rcbilson/${SERVICE}
 
 .PHONY: frontend
 frontend:
